@@ -1,5 +1,8 @@
 package actions.views;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import constants.AttributeConst;
 import constants.JpaConst;
 import models.Employee;
@@ -53,6 +56,16 @@ public class EmployeeConverter {
                           :AttributeConst.DEL_FLAG_FALSE.getIntegerValue());
 
 
+    }
+
+    public static List<EmployeeView> toViewList(List<Employee> list) {
+        List<EmployeeView> evs = new ArrayList<>();
+
+        for (Employee e : list) {
+            evs.add(toView(e));
+        }
+
+        return evs;
     }
 
     public static void copyViewToModel(Employee e, EmployeeView ev) {
