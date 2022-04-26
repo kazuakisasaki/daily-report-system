@@ -32,7 +32,7 @@ public class EmployeeAction extends ActionBase {
     public void index()throws ServletException,IOException{
 
 
-        if(checkAdmim()) {
+        if(checkAdmin()) {
 
         int page = getPage();
         List<EmployeeView>employees = service.getPerPage(page);
