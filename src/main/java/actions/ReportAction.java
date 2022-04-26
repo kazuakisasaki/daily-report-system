@@ -106,5 +106,64 @@ public class ReportAction extends ActionBase {
 
         }
     }
+    public void show() throws ServletException,IOException{
+
+        ReportView rv = service.findOne(toNumber(getRequestParam(AttributeConst.REP_ID)));
+
+        if(rv == null) {
+
+            forward(ForwardConst.FW_ERR_UNKNOWN);
+
+        }else {
+
+            putRequestScope(AttributeConst.REPORT,rv);
+
+            forward(ForwardConst.FW_REP_SHOW);
+        }
+    }
+    public void edit()throws ServletException,IOException{
+
+        ReportView rv = service.findOne(toNumber(getRequestParam(AttributeConst.REP_ID)));
+
+        EmployeeView ev = (EmployeeView) getSessionScope(AttributeConst.LOGIN_EMP);
+
+        if(rv == null || ev.getId() != rv.getEmployee().getId()) {
+
+            forward(ForwardConst.FW_ERR_UNKNOWN);
+        }else {
+
+            putRequestScope(AttributeConst.TOKEN,getTokenId());
+            putRequestScope(AttributeConst.REPORT,rv);
+
+            forward(ForwardConst.FW_REP_EDIT);
+        }
+    }
+    public void update() throws ServletException,IOException{
+
+        if(checkToken()) {
+
+            ReportView rv = service.findOne(toNumber(getRequestParam(AttributeConst.REP_ID)));
+
+            rv.setReportDate(toLocalDate(getRequestParam(AttributeConst.REP_DATE)));
+            rv.setTitle(getRequestParam(AttributeConst.REP_TITLE));
+            rv.setContent(getRequestParam(AttributeConst.REP_CONTENT));
+
+            List<String> errors = service.update(rv);
+
+            if(errors.size() > 0) {
+
+                putRequestScope(AttributeConst.TOKEN,getTokenId());
+                putRequestScope(AttributeConst.REPORT,rv);
+                putRequestScope(AttributeConst.ERR,errors);
+
+                forward(ForwardConst.FW_REP_EDIT);
+            }else {
+
+                putSessionScope(AttributeConst.FLUSH,MessageConst.I_UPDATED.getMessage());
+
+                redirect(ForwardConst.ACT_REP,ForwardConst.CMD_INDEX);
+            }
+        }
+    }
 
 }
